@@ -1,0 +1,136 @@
+# Creates one issue per on-track milestone (see the README), each attached to
+# a GitHub milestone with its date. Runs once, on the repository's first
+# commit: the path filter means a later push, which never touches this file,
+# does not start a runner. It also does nothing if any issue already exists.
+name: Create Milestone Issues
+
+on:
+  push:
+    branches: [main, master]
+    paths: ['.github/workflows/milestones.yml']
+  workflow_dispatch:
+
+jobs:
+  create-issues:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Check for existing issues
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo, state: 'all'
+            });
+            core.setOutput('skip', existing.data.length > 0 ? 'true' : 'false');
+
+      - name: Create label
+        if: steps.check.outputs.skip == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.issues.createLabel({
+                owner: context.repo.owner, repo: context.repo.repo,
+                name: 'milestone', color: '0075ca', description: 'On-track milestone'
+              });
+            } catch (e) { /* already exists */ }
+
+      - name: Milestone 1
+        if: steps.check.outputs.skip == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const m = await github.rest.issues.createMilestone({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title: "Milestone 1: The party assembles", due_on: '2026-10-16T23:59:00-08:00'
+            }).catch(() => null);
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title: "Milestone 1: The party assembles",
+              labels: ['milestone'],
+              milestone: m ? m.data.number : undefined,
+              body: "## Milestone 1: The party assembles\n\n**On track by 2026-10-16.** Not graded on its own; this is where you should be to finish without a bad last week. The lab is due 2026-12-11 at 11:59 PM.\n\n### Checklist\n\n- [ ] A `Makefile` that keeps `include dungeon/dungeon.mk`\n- [ ] `make` builds `game`, `barbarian`, `wizard` and `rogue`\n- [ ] `game` starts the other three with `fork` and `exec`\n- [ ] All three characters stay running until the dungeon finishes\n\nClose this issue when it is done. See the README section with the same name for details."
+            });
+      - name: Milestone 2
+        if: steps.check.outputs.skip == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const m = await github.rest.issues.createMilestone({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title: "Milestone 2: Shared memory and the Barbarian", due_on: '2026-10-23T23:59:00-08:00'
+            }).catch(() => null);
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title: "Milestone 2: Shared memory and the Barbarian",
+              labels: ['milestone'],
+              milestone: m ? m.data.number : undefined,
+              body: "## Milestone 2: Shared memory and the Barbarian\n\n**On track by 2026-10-23.** Not graded on its own; this is where you should be to finish without a bad last week. The lab is due 2026-12-11 at 11:59 PM.\n\n### Checklist\n\n- [ ] `game` creates the shared memory and sizes it to one `struct Dungeon`\n- [ ] Every character opens and maps the same segment\n- [ ] Every character installs a `sigaction` handler and survives `DUNGEON_SIGNAL`\n- [ ] The Barbarian wins its rounds\n- [ ] Characters exit when `running` becomes false, without the startup race\n\nClose this issue when it is done. See the README section with the same name for details."
+            });
+      - name: Milestone 3
+        if: steps.check.outputs.skip == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const m = await github.rest.issues.createMilestone({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title: "Milestone 3: The Wizard", due_on: '2026-11-06T23:59:00-08:00'
+            }).catch(() => null);
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title: "Milestone 3: The Wizard",
+              labels: ['milestone'],
+              milestone: m ? m.data.number : undefined,
+              body: "## Milestone 3: The Wizard\n\n**On track by 2026-11-06.** Not graded on its own; this is where you should be to finish without a bad last week. The lab is due 2026-12-11 at 11:59 PM.\n\n### Checklist\n\n- [ ] The Wizard decodes `barrier.spell` using its first character as the shift\n- [ ] Letters keep their case; everything else is copied unchanged\n- [ ] Nothing is ever written past the end of `wizard.spell`\n- [ ] The Wizard wins its rounds\n\nClose this issue when it is done. See the README section with the same name for details."
+            });
+      - name: Milestone 4
+        if: steps.check.outputs.skip == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const m = await github.rest.issues.createMilestone({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title: "Milestone 4: The Rogue", due_on: '2026-11-13T23:59:00-08:00'
+            }).catch(() => null);
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title: "Milestone 4: The Rogue",
+              labels: ['milestone'],
+              milestone: m ? m.data.number : undefined,
+              body: "## Milestone 4: The Rogue\n\n**On track by 2026-11-13.** Not graded on its own; this is where you should be to finish without a bad last week. The lab is due 2026-12-11 at 11:59 PM.\n\n### Checklist\n\n- [ ] The Rogue binary-searches `rogue.pick` using `trap.direction`\n- [ ] The dungeon reports **Score before semaphores: 140/140**\n\nClose this issue when it is done. See the README section with the same name for details."
+            });
+      - name: Milestone 5
+        if: steps.check.outputs.skip == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const m = await github.rest.issues.createMilestone({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title: "Milestone 5: The treasure room", due_on: '2026-11-20T23:59:00-08:00'
+            }).catch(() => null);
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title: "Milestone 5: The treasure room",
+              labels: ['milestone'],
+              milestone: m ? m.data.number : undefined,
+              body: "## Milestone 5: The treasure room\n\n**On track by 2026-11-20.** Not graded on its own; this is where you should be to finish without a bad last week. The lab is due 2026-12-11 at 11:59 PM.\n\n### Checklist\n\n- [ ] `game` creates both lever semaphores before calling `RunDungeon()`\n- [ ] Every character handles `SEMAPHORE_SIGNAL` without crashing\n- [ ] Two characters hold the levers with `sem_wait`\n- [ ] The Rogue copies all four treasure characters into `spoils`\n- [ ] The levers are posted and the door closes behind the Rogue\n- [ ] The dungeon reports **Total score: 360/360** and `./selfcheck.sh` passes\n\nClose this issue when it is done. See the README section with the same name for details."
+            });
+      - name: Milestone 6
+        if: steps.check.outputs.skip == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const m = await github.rest.issues.createMilestone({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title: "Milestone 6: The writeup", due_on: '2026-12-04T23:59:00-08:00'
+            }).catch(() => null);
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title: "Milestone 6: The writeup",
+              labels: ['milestone'],
+              milestone: m ? m.data.number : undefined,
+              body: "## Milestone 6: The writeup\n\n**On track by 2026-12-04.** Not graded on its own; this is where you should be to finish without a bad last week. The lab is due 2026-12-11 at 11:59 PM.\n\n### Checklist\n\n- [ ] Name and student ID filled in at the top of `WRITEUP.md`\n- [ ] All four questions answered in your own words\n- [ ] Sources listed\n\nClose this issue when it is done. See the README section with the same name for details."
+            });

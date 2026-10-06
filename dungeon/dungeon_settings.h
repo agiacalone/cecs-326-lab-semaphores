@@ -60,8 +60,7 @@
 #define POINTS_PER_TREASURE_CHAR (55)
 
 //This is how many points you get for unblocking the semaphores after getting the treasure at the end. Default: 0
-//(The four 55-pt treasure chars already require correct semaphore handling, so this is intentionally 0 — leave it.)
-#define POINTS_FOR_POSTING_SEMAPHORES (0)
+#define POINTS_FOR_POSTING_SEMAPHORES (0) 
 
 #define POINTS_FOR_SEMAPHORES (POINTS_PER_TREASURE_CHAR * 4 + POINTS_FOR_POSTING_SEMAPHORES)
 

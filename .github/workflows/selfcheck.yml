@@ -1,0 +1,23 @@
+# Student self-check. Advisory only: this is NOT the grader, and its result
+# does not appear in your grade. It runs ./selfcheck.sh, the same script you
+# can run on your own machine.
+#
+# It runs ONLY when you start it: Actions tab -> Self-check -> Run workflow.
+# The course shares one pool of Actions minutes, and a dungeon run takes one
+# to two minutes, so it does not run on every push.
+name: Self-check
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Self-check (builds, then one dungeon run)
+        run: ./selfcheck.sh

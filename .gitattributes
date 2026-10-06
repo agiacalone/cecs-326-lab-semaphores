@@ -1,0 +1,4 @@
+# Keep the dungeon files byte-identical everywhere.
+dungeon/*.h text eol=lf
+dungeon/*.mk text eol=lf
+dungeon/lib/*.o binary
